@@ -8,7 +8,7 @@ import pytest
 from common import small_buffer
 import vaex
 import vaex.distributed.dask
-# import vaex.ray
+import vaex.distributed.ray
 
 
 
@@ -112,15 +112,18 @@ def test_nested_task(df):
 import numpy as np
 
 
-@pytest.fixture(params=['executor_dask'])
-def executor(request, executor_dask):
-    named = dict(executor_dask=executor_dask, executor_ray=executor_ray)
-    return named[request.param]
+if vaex.utils.devmode:
+    @pytest.fixture(params=['executor_dask'])
+    def executor(request, executor_dask):
+        named = dict(executor_dask=executor_dask, executor_ray=executor_ray)
+        return named[request.param]
+else:
+    # ray takes a while to spin up/down
+    @pytest.fixture(params=['executor_dask', 'executor_ray'])
+    def executor(request, executor_dask, executor_ray):
+        named = dict(executor_dask=executor_dask, executor_ray=executor_ray)
+        return named[request.param]
 
-# @pytest.fixture(params=['executor_dask', 'executor_ray'])
-# def executor(request, executor_dask, executor_ray):
-#     named = dict(executor_dask=executor_dask, executor_ray=executor_ray)
-#     return named[request.param]
 
 
 @pytest.fixture(scope='session')
