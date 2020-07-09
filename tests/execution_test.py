@@ -7,7 +7,7 @@ import pytest
 
 from common import small_buffer
 import vaex
-import vaex.dask
+import vaex.distributed.dask
 # import vaex.ray
 
 
@@ -125,12 +125,12 @@ def executor(request, executor_dask):
 
 @pytest.fixture(scope='session')
 def executor_ray():
-    return vaex.ray.Executor(chunk_size=2)
+    return vaex.distributed.ray.Executor(chunk_size=2)
 
 
 @pytest.fixture(scope='session')
 def executor_dask():
-    return vaex.dask.Executor(chunk_size=2)
+    return vaex.distributed.dask.Executor(chunk_size=2)
 
 
 @pytest.fixture
