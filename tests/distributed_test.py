@@ -1,6 +1,8 @@
 import pytest
 import vaex
 import vaex.distributed.dask
+from dask.distributed import Client, LocalCluster
+
 
 # we don't test ray yet with general tasks, because they don't pickle well
 if True:  # vaex.utils.devmode:
@@ -15,8 +17,16 @@ else:
         named = dict(ddf_dask=ddf_dask, ddf_ray=ddf_ray)
         return named[request.param]
 
+@pytest.fixture(scope='session')
+def dask_cluster():
+    return LocalCluster()
+
+@pytest.fixture(scope='session')
+def dask_client(dask_cluster):
+    return Client(dask_cluster)#, set_as_default=False)
+
 @pytest.fixture()
-def ddf_dask(df_trimmed):
+def ddf_dask(df_trimmed, dask_client):
     return df_trimmed.distributed.to_dask()
 
 
